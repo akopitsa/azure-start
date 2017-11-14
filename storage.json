@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS",
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Storage Account type"
+      }
+    }
+  },
+  "variables": {
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'standardsa')]",
+    "vnetName": "myVNet",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetName": "Subnet-1",
+    "subnetName2": "Subnet-2",
+    "subnetPrefix": "10.0.0.0/24",
+    "subnetPrefix2": "10.0.1.0/24",
+    "dnsServer": "8.8.8.8"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('storageAccountType')]"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },
+    {
+  "apiVersion": "2015-05-01-preview",
+  "type": "Microsoft.Network/virtualNetworks",
+  "name": "[variables('vnetName')]",
+  "location": "[resourceGroup().location]",
+  "properties": {
+    "addressSpace": {
+      "addressPrefixes": [
+        "[variables('addressPrefix')]",
+      ]
+    },
+    "subnets": [
+      {
+        "name": "[variables('subnetName')]",
+        "properties": {
+          "addressPrefix": "[variables('subnetPrefix')]"
+        }
+      },
+      {
+        "name": "[variables('subnetName2')]",
+        "properties": {
+          "addressPrefix": "[variables('subnetPrefix2')]"
+        }
+      }
+    ],
+    "dhcpOptions": {
+      "dnsServers": [ "[variables('dnsServer')]" ]
+    }
+  }
+}
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    }
+  }
+}
